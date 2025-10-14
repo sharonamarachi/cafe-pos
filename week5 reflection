@@ -1,0 +1,7 @@
+I added a simple Priced interface so every product and add-on can return its price in the same way. This keeps pricing clear and consistent.
+
+Using the Decorator pattern preserves the Open/Closed Principle, since I can add new add-ons without changing existing classes.
+
+If I wanted to add another add-on next week, I’d just create a new class extending ProductDecorator and give it its own surcharge.
+
+I didn’t add any new tokens to the factory, so the design stayed exactly as provided while still remaining open for future extensions.
