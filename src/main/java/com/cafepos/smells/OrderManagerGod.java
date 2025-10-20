@@ -1,24 +1,50 @@
 package com.cafepos.smells;
 
 import com.cafepos.common.Money;
+import com.cafepos.domain.CardPayment;
+import com.cafepos.domain.CashPayment;
+import com.cafepos.domain.LineItem;
+import com.cafepos.domain.Order;
+import com.cafepos.domain.OrderIds;
+import com.cafepos.domain.PaymentStrategy;
+import com.cafepos.domain.WalletPayment;
 import com.cafepos.factory.ProductFactory;
+import com.cafepos.pricing.DiscountPolicy;
+import com.cafepos.pricing.FixedCouponDiscount;
+import com.cafepos.pricing.FixedRateTaxPolicy;
+import com.cafepos.pricing.LoyaltyPercentDiscount;
+import com.cafepos.pricing.NoDiscount;
+import com.cafepos.pricing.ReceiptPrinter;
+import com.cafepos.pricing.TaxPolicy;
 import com.cafepos.catalog.Product;
+import com.cafepos.pricing.PricingService;
 
 public class OrderManagerGod {
-    public static int TAX_PERCENT = 10;
-    public static String LAST_DISCOUNT_CODE = null;
 
-    public static String process(String recipe, int qty, String paymentType,
-            String discountCode, boolean printReceipt) {
+    public final class OrderManager {
+        private final ProductFactory factory;
+        private final DiscountPolicy discountPolicy;
+        private final TaxPolicy taxPolicy;
+        private final ReceiptPrinter printer;
+        private final PaymentStrategy paymentStrategy;
 
-        // SMELL: God Class & Long Method - This method handles creation, pricing,
-        // discounting, tax calculation, payment processing, AND receipt formatting.
-        // Multiple responsibilities should be separated into cohesive classes.
+        public OrderManager(ProductFactory factory, DiscountPolicy discountPolicy,
+                TaxPolicy taxPolicy, ReceiptPrinter printer, PaymentStrategy paymentStrategy) {
+            this.factory = factory;
+            this.discountPolicy = discountPolicy;
+            this.taxPolicy = taxPolicy;
+            this.printer = printer;
+            this.paymentStrategy = paymentStrategy;
+        }
+    }
 
+    public static String process(String recipe, int qty, String paymentType, String discountCode,
+            boolean printReceipt) {
         ProductFactory factory = new ProductFactory();
         Product product = factory.create(recipe);
 
         Money unitPrice;
+
         try {
             var priced = product instanceof com.cafepos.decorator.Priced p
                     ? p.price()
@@ -30,74 +56,43 @@ public class OrderManagerGod {
 
         if (qty <= 0)
             qty = 1;
-
         Money subtotal = unitPrice.multiply(qty);
 
-        // SMELL: Primitive Obsession - discount codes as raw strings; magic number 5 for LOYAL5 rate.
-        // SMELL: Shotgun Surgery risk - adding a new discount type requires editing this method.
-        // SMELL: Duplicated Logic - BigDecimal arithmetic repeated inline.
+        DiscountPolicy discountPolicy = switch (discountCode == null ? "" : discountCode.toUpperCase()) {
+            case "LOYAL5" -> new LoyaltyPercentDiscount(5);
+            case "COUPON1" -> new FixedCouponDiscount(Money.of(1.00));
+            default -> new NoDiscount();
+        };
 
-        Money discount = Money.zero();
-        if (discountCode != null) {
-            if (discountCode.equalsIgnoreCase("LOYAL5")) {
-                // SMELL: percentage) duplicated BigDecimal manipulation.
-                discount = Money.of(subtotal.asBigDecimal()
-                        .multiply(java.math.BigDecimal.valueOf(5))
-                        .divide(java.math.BigDecimal.valueOf(100)));
-            } else if (discountCode.equalsIgnoreCase("COUPON1")) {
-                // SMELL: (fixed coupon amount) hardcoded discount logic.
-                discount = Money.of(1.00);
-            } else if (discountCode.equalsIgnoreCase("NONE")) {
-                discount = Money.zero();
-            } else {
-                discount = Money.zero();
-            }
-            // SMELL: Global/Static State - LAST_DISCOUNT_CODE mutated; hard to test.
-            LAST_DISCOUNT_CODE = discountCode;
-        }
+        Money discount = discountPolicy.discountOf(subtotal);
 
-        Money discounted = Money.of(subtotal.asBigDecimal()
-                .subtract(discount.asBigDecimal()));
+        Money discounted = Money.of(subtotal.asBigDecimal().subtract(discount.asBigDecimal()));
         if (discounted.asBigDecimal().signum() < 0)
             discounted = Money.zero();
 
-        // SMELL: Primitive Obsession - TAX_PERCENT as static primitive; magic numbers 100 in division.
-        // SMELL: Shotgun Surgery risk - changing tax rate or formula requires editing this method.
-        // SMELL: Duplicated Logic - BigDecimal multiply or divide pattern repeated.
-        var tax = Money.of(discounted.asBigDecimal()
-                .multiply(java.math.BigDecimal.valueOf(TAX_PERCENT))
-                .divide(java.math.BigDecimal.valueOf(100)));
+        TaxPolicy taxPolicy = new FixedRateTaxPolicy(10);
+        Money tax = taxPolicy.taxOn(discounted);
         var total = discounted.add(tax);
 
-        // SMELL: Feature Envy / Shotgun Surgery - Payment type as raw string; I/O logic embedded.
-        // SMELL: Hard to extend: adding a new payment method requires editing this method.
-        if (paymentType != null) {
-            if (paymentType.equalsIgnoreCase("CASH")) {
-                System.out.println("[Cash] Customer paid " + total + " EUR");
-            } else if (paymentType.equalsIgnoreCase("CARD")) {
-                System.out.println("[Card] Customer paid " + total + " EUR with card ****1234");
-            } else if (paymentType.equalsIgnoreCase("WALLET")) {
-                System.out.println("[Wallet] Customer paid " + total + " EUR via wallet user-wallet-789");
-            } else {
-                System.out.println("[UnknownPayment] " + total);
-            }
-        }
+        PaymentStrategy payment = switch (paymentType == null ? "" : paymentType.toUpperCase()) {
+            case "CASH" -> new CashPayment();
+            case "CARD" -> new CardPayment("1234");
+            case "WALLET" -> new WalletPayment("user-wallet-789");
+            default -> order -> System.out.println("[UnknownPayment] " + order.totalWithTax(10));
+        };
 
-        // SMELL: God Class - Receipt formatting logic inline; should be delegated.
-        StringBuilder receipt = new StringBuilder();
-        receipt.append("Order (").append(recipe).append(") x").append(qty).append("\n");
-        receipt.append("Subtotal: ").append(subtotal).append("\n");
-        if (discount.asBigDecimal().signum() > 0) {
-            receipt.append("Discount: -").append(discount).append("\n");
-        }
-        // SMELL: Primitive Obsession - TAX_PERCENT in receipt string format.
-        receipt.append("Tax (").append(TAX_PERCENT).append("%): ").append(tax).append("\n");
-        receipt.append("Total: ").append(total);
+        Order dummyOrder = new Order(OrderIds.next());
+        dummyOrder.addItem(new LineItem(product, qty));
 
-        String out = receipt.toString();
-        if (printReceipt) {
-            System.out.println(out);
-        }
-        return out;
+        payment.pay(dummyOrder);
+
+        ReceiptPrinter printer = new ReceiptPrinter();
+        String receiptText = printer.format(recipe, qty,
+                new PricingService.PricingResult(subtotal, discount, tax, total), 10);
+
+        if (printReceipt)
+            System.out.println(receiptText);
+        return receiptText;
+
     }
 }
