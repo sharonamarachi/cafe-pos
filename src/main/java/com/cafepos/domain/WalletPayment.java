@@ -10,7 +10,7 @@ public final class WalletPayment implements PaymentStrategy {
     @Override
     public void pay(Order order) {
         System.out.println("[Wallet] Customer paid " +
-                String.format("%.2f", order.totalWithTax(10)) +
-                " EUR using wallet " + walletId);
+                order.totalWithTax(10) +
+                " EUR via wallet " + walletId);
     }
 }
