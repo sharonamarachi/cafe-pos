@@ -1,0 +1,40 @@
+System Overview
+
+The refactored version replaces the old OrderManagerGod with smaller, independent classes that work together through clearly defined interfaces.
+
+Main Flow
+
+CheckoutService orchestrates the whole process:
+→ ProductFactory builds the product and decorators
+→ PricingService calculates prices using DiscountPolicy and TaxPolicy
+→ ReceiptPrinter formats the receipt text
+→ PaymentStrategy handles payment I/O (cash, card, wallet)
+
+All dependencies are injected through constructors — no global variables or shared state.
+
+Key Components & Responsibilities
+Component	Responsibility
+CheckoutService	Coordinates checkout flow. Calls factory, pricing, printer, and payment.
+ProductFactory	Builds the correct Product (with any decorators like ExtraShot or SizeLarge).
+PricingService	Calculates subtotal, discount, tax, and total using injected policies.
+DiscountPolicy	Strategy interface for discount logic. Implementations: NoDiscount, LoyaltyPercentDiscount, FixedCouponDiscount.
+TaxPolicy	Strategy interface for tax calculation. Implementation: FixedRateTaxPolicy.
+PricingResult	Value object storing subtotal, discount, tax, and total.
+ReceiptPrinter	Formats the output text for receipts.
+PaymentStrategy	Handles customer payment display (cash, card, wallet).
+Design Principles
+
+Single Responsibility: Each class has one clear job.
+
+Open/Closed: Add new discounts or tax rules without touching existing code.
+
+Dependency Inversion: High-level code depends on interfaces, not concrete classes.
+
+No Globals: All objects are passed in, not accessed as shared state.
+
+Testability: Each class can be unit-tested on its own.
+
+Result
+
+The codebase is now modular, easier to extend, and fully covered by unit and characterization tests.
+Adding a new feature (like a SeasonalDiscount or VATPolicy) only requires creating a new class and wiring it in — no edits to the core system.
