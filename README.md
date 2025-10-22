@@ -1,4 +1,4 @@
-n this lab, I refactored OrderManagerGod to use smaller, focused classes like CheckoutService and PricingService.
+In this lab, I refactored OrderManagerGod to use smaller, focused classes like CheckoutService and PricingService.
 This removed several code smells:
 
 God Class: logic for pricing, discounts, tax, and receipts was all in one place.
