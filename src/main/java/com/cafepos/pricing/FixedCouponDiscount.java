@@ -6,22 +6,18 @@ public final class FixedCouponDiscount implements DiscountPolicy {
     private final Money amount;
 
     public FixedCouponDiscount(Money amount) {
-
-        if (amount == null) {
-            throw new IllegalArgumentException("Coupon amount cannot be null");
-        }
-        // Optional but sensible: reject zero/negative coupons
-        if (amount.asBigDecimal().signum() <= 0) {
-            throw new IllegalArgumentException("Coupon amount must be > 0");
-        }
+        if (amount == null)
+            throw new IllegalArgumentException("amount required");  // 👈 this line fixes the test
+        if (amount.asBigDecimal().signum() <= 0)
+            throw new IllegalArgumentException("amount must be positive");
         this.amount = amount;
     }
 
     @Override
     public Money discountOf(Money subtotal) {
-        // cap at subtotal
-        if (amount.asBigDecimal().compareTo(subtotal.asBigDecimal()) > 0)
-            return subtotal;
-        return amount;
+        if (subtotal == null)
+            throw new IllegalArgumentException("subtotal required");
+        // Cap discount at subtotal
+        return amount.asBigDecimal().compareTo(subtotal.asBigDecimal()) > 0 ? subtotal : amount;
     }
 }

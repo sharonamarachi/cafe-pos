@@ -4,6 +4,12 @@ import com.cafepos.catalog.Product;
 import com.cafepos.catalog.Priced;     // <-- critical: use the SAME Priced your products implement
 import com.cafepos.common.Money;
 import com.cafepos.factory.ProductFactory;
+import com.cafepos.pricing.DiscountPolicy;
+import com.cafepos.pricing.FixedCouponDiscount;
+import com.cafepos.pricing.FixedRateTaxPolicy;
+import com.cafepos.pricing.LoyaltyPercentDiscount;
+import com.cafepos.pricing.NoDiscount;
+import com.cafepos.pricing.TaxPolicy;
 
 public class OrderManagerGod {
 
@@ -20,28 +26,24 @@ public class OrderManagerGod {
         // Use the correct Priced interface so decorators are included
         Money unit = (p instanceof Priced priced) ? priced.price() : p.basePrice();
 
-        Money subtotal = unit.multiply(quantity);
+        Money subtotal = unit.multiply(qty);
 
-        String code = (discountCode == null ? "NONE" : discountCode.trim().toUpperCase());
-        Money discount = Money.zero();
-        switch (code) {
-            case "LOYAL5":
-                discount = subtotal.multiplyPercent(5);
-                break;
-            case "COUPON1":
-                Money one = Money.of(1.00);
-                discount = one.asBigDecimal().compareTo(subtotal.asBigDecimal()) > 0 ? subtotal : one;
-                break;
-            case "NONE":
-            default:
-                code = "NONE";
-                discount = Money.zero();
-        }
-        LAST_DISCOUNT_CODE = code;
+        DiscountPolicy discountPolicy = switch (discountCode == null ? "" : discountCode.toUpperCase()) {
+            case "LOYAL5" -> new LoyaltyPercentDiscount(5);
+            case "COUPON1" -> new FixedCouponDiscount(Money.of(1.00));
+            default -> new NoDiscount();
+        };
 
-        Money discounted = subtotal.minus(discount);
-        Money tax = discounted.multiplyPercent(TAX_PERCENT);
-        Money total = discounted.add(tax);
+        Money discount = discountPolicy.discountOf(subtotal);
+
+        Money discounted = Money.of(subtotal.asBigDecimal().subtract(discount.asBigDecimal()));
+        if (discounted.asBigDecimal().signum() < 0)
+            discounted = Money.zero();
+
+        TaxPolicy taxPolicy = new FixedRateTaxPolicy(10);
+        Money tax = taxPolicy.taxOn(discounted);
+        var total = discounted.add(tax);
+
 
         StringBuilder sb = new StringBuilder();
         sb.append("Order (").append(recipe == null ? "" : recipe.trim()).append(") x").append(quantity).append('\n');
