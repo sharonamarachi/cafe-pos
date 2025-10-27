@@ -1,7 +1,7 @@
 package com.cafepos.smells;
 
 import com.cafepos.catalog.Product;
-import com.cafepos.catalog.Priced;     // <-- critical: use the SAME Priced your products implement
+import com.cafepos.catalog.Priced; 
 import com.cafepos.common.Money;
 import com.cafepos.factory.ProductFactory;
 import com.cafepos.pricing.DiscountPolicy;

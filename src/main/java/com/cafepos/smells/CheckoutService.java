@@ -13,7 +13,7 @@ public final class CheckoutService {
     private final int taxPercent;
 
     public CheckoutService(ProductFactory factory, PricingService pricing,
-                           ReceiptPrinter printer, int taxPercent) {
+            ReceiptPrinter printer, int taxPercent) {
         this.factory = factory;
         this.pricing = pricing;
         this.printer = printer;
@@ -22,15 +22,13 @@ public final class CheckoutService {
 
     public String checkout(String recipe, int qty) {
         Product product = factory.create(recipe);
-        if (qty <= 0) qty = 1;
-
-        Money unit = (product instanceof com.cafepos.decorator.Priced p)
-                ? p.price() : product.basePrice();
-
+        if (qty <= 0)
+            qty = 1;
+        Money unit = (product instanceof com.cafepos.catalog.Priced p)
+                ? p.price()
+                : product.basePrice();
         Money subtotal = unit.multiply(qty);
         var result = pricing.price(subtotal);
-
-
         return printer.format(recipe, qty, result, taxPercent);
     }
 }
