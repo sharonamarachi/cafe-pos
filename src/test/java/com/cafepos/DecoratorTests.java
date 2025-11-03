@@ -7,9 +7,8 @@ import com.cafepos.decorator.ExtraShot;
 import com.cafepos.decorator.OatMilk;
 import com.cafepos.decorator.SizeLarge;
 import com.cafepos.factory.ProductFactory;
-
-import com.cafepos.domain.LineItem;
-import com.cafepos.domain.Order;
+import com.cafepos.order.LineItem;
+import com.cafepos.order.Order;
 import com.cafepos.catalog.Priced;
 
 import com.cafepos.catalog.Product;

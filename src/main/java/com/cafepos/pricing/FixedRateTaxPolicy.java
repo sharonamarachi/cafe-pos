@@ -1,5 +1,6 @@
 package com.cafepos.pricing;
 
+import com.cafepos.checkout.TaxPolicy;
 import com.cafepos.common.Money;
 
 public final class FixedRateTaxPolicy implements TaxPolicy {

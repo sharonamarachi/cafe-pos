@@ -2,9 +2,9 @@ package com.cafepos.smells;
 
 import com.cafepos.common.Money;
 import com.cafepos.factory.ProductFactory;
-import com.cafepos.pricing.ReceiptPrinter;
 import com.cafepos.catalog.Product;
-import com.cafepos.pricing.PricingService;
+import com.cafepos.checkout.PricingService;
+import com.cafepos.checkout.ReceiptPrinter;
 
 public final class CheckoutService {
     private final ProductFactory factory;

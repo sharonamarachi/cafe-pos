@@ -1,6 +1,9 @@
-package com.cafepos.domain;
+package com.cafepos.order;
 
 import com.cafepos.common.Money;
+import com.cafepos.domain.OrderObserver;
+import com.cafepos.payment.PaymentStrategy;
+
 import java.util.ArrayList;
 import java.util.List;
 

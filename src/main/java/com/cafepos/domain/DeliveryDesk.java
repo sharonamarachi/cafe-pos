@@ -1,5 +1,7 @@
 package com.cafepos.domain;
 
+import com.cafepos.order.Order;
+
 public final class DeliveryDesk implements OrderObserver {
     @Override
     public void updated(Order order, String eventType) {

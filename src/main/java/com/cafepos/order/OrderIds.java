@@ -1,4 +1,4 @@
-package com.cafepos.domain;
+package com.cafepos.order;
 
 import java.util.concurrent.atomic.AtomicLong;
 

@@ -4,12 +4,12 @@ import com.cafepos.catalog.Catalog;
 import com.cafepos.catalog.InMemoryCatalog;
 import com.cafepos.catalog.SimpleProduct;
 import com.cafepos.common.Money;
-import com.cafepos.domain.LineItem;
-import com.cafepos.domain.Order;
-import com.cafepos.domain.OrderIds;
-import com.cafepos.domain.CashPayment;
-import com.cafepos.domain.CardPayment;
-import com.cafepos.domain.PaymentStrategy;
+import com.cafepos.order.LineItem;
+import com.cafepos.order.Order;
+import com.cafepos.order.OrderIds;
+import com.cafepos.payment.CardPayment;
+import com.cafepos.payment.CashPayment;
+import com.cafepos.payment.PaymentStrategy;
 
 public final class Week3Demo {
 

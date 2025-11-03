@@ -3,11 +3,11 @@ package com.cafepos.demo;
 import java.util.Scanner;
 
 import com.cafepos.smells.OrderManagerGod;
+import com.cafepos.checkout.PricingService;
+import com.cafepos.checkout.ReceiptPrinter;
 import com.cafepos.factory.ProductFactory;
-import com.cafepos.pricing.PricingService;
 import com.cafepos.pricing.LoyaltyPercentDiscount;
 import com.cafepos.pricing.FixedRateTaxPolicy;
-import com.cafepos.pricing.ReceiptPrinter;
 import com.cafepos.smells.CheckoutService;
 public final class Week6Demo {
     public static void main(String[] args) {

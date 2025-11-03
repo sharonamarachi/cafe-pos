@@ -1,15 +1,15 @@
 package com.cafepos.smells;
 
 import com.cafepos.catalog.Product;
+import com.cafepos.checkout.DiscountPolicy;
+import com.cafepos.checkout.TaxPolicy;
 import com.cafepos.catalog.Priced; 
 import com.cafepos.common.Money;
 import com.cafepos.factory.ProductFactory;
-import com.cafepos.pricing.DiscountPolicy;
 import com.cafepos.pricing.FixedCouponDiscount;
 import com.cafepos.pricing.FixedRateTaxPolicy;
 import com.cafepos.pricing.LoyaltyPercentDiscount;
 import com.cafepos.pricing.NoDiscount;
-import com.cafepos.pricing.TaxPolicy;
 
 public class OrderManagerGod {
 

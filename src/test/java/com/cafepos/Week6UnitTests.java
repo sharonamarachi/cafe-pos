@@ -1,20 +1,17 @@
 package com.cafepos;
 
+import com.cafepos.checkout.DiscountPolicy;
+import com.cafepos.checkout.PricingService;
+import com.cafepos.checkout.ReceiptPrinter;
+import com.cafepos.checkout.TaxPolicy;
 import com.cafepos.common.Money;
 import com.cafepos.smells.OrderManagerGod;
 import com.cafepos.pricing.LoyaltyPercentDiscount;
 import com.cafepos.pricing.FixedRateTaxPolicy;
-import com.cafepos.pricing.PricingService;
 import com.cafepos.smells.CheckoutService;
-import com.cafepos.pricing.ReceiptPrinter;
 import com.cafepos.factory.ProductFactory;
 import com.cafepos.pricing.NoDiscount;
 import com.cafepos.pricing.FixedCouponDiscount;
-import com.cafepos.pricing.DiscountPolicy;
-import com.cafepos.pricing.TaxPolicy;
-
-
-
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
