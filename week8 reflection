@@ -1,0 +1,11 @@
+In our refactor, we applied the Command and Adapter patterns to improve structure and flexibility.
+The Command pattern helped separate the UI button actions from the business logic. 
+Instead of the UI directly modifying the order, each button triggers a Command object such as AddItemCommand. 
+That Command talks to the OrderService, which updates the Order. This separation makes the code easier to understand and extend. 
+For example, we can add undo functionality simply by storing executed commands and calling undo() on them, without rewriting UI code.
+
+The Adapter pattern allowed us to connect our system to a legacy printer library without changing our existing domain classes or touching the vendor code. 
+Instead, we built LegacyPrinterAdapter that translates our String receipts into the byte format expected by the legacy printer. 
+This avoids tight coupling and keeps our core system clean. If we ever change printer vendors, we only update the adapter, not the whole system.
+
+Overall, these patterns improved maintainability by reducing dependencies and making each class responsible for one role. The system now supports new features (extra commands, undo, new printers) without breaking existing code or rewriting large sections.
