@@ -1,0 +1,7 @@
+| State         | pay              | prepare                        | markReady         | deliver               | cancel                        |
+| ------------- | ---------------- | ------------------------------ | ----------------- | --------------------- | ----------------------------- |
+| **NEW**       | ✓ → PREPARING    | ✗ (stay NEW)                   | ✗ (stay NEW)      | ✗ (stay NEW)          | ✓ → CANCELLED                 |
+| **PREPARING** | ✗ (already paid) | ✗ (still preparing, stay PREP) | ✓ → READY         | ✗ (not before ready)  | ✓ → CANCELLED                 |
+| **READY**     | ✗ (already paid) | ✗ (already prepared)           | ✗ (already ready) | ✓ → DELIVERED         | ✗ (cannot cancel after ready) |
+| **DELIVERED** | ✗ (completed)    | ✗ (completed)                  | ✗ (completed)     | ✗ (already delivered) | ✗ (completed)                 |
+| **CANCELLED** | ✗ (cancelled)    | ✗ (cancelled)                  | ✗ (cancelled)     | ✗ (cancelled)         | ✗ (already cancelled)         |
