@@ -32,7 +32,7 @@ public class Week9Tests {
         root.add(drinks);
         root.add(desserts);
 
-        // Walk depth-first using the composite iterator exposed by Menu
+      
         List<String> seen = new ArrayList<>();
         seen.add(root.name());
         Iterator<MenuComponent> it = root.iterator();
@@ -70,9 +70,7 @@ public class Week9Tests {
         assertEquals(List.of("Espresso", "Latte (Large)", "Oat Cookie"), names);
     }
 
-    // ---------------------------
-    // Part C: State FSM
-    // ---------------------------
+
 
     @Test
     void order_fsm_happy_path() {
@@ -92,7 +90,6 @@ public class Week9Tests {
     @Test
     void illegal_transitions_leave_state_unchanged() {
         OrderFSM fsm = new OrderFSM();
-        // From NEW: prepare/markReady/deliver are illegal → remain NEW
         fsm.prepare();
         assertEquals("NEW", fsm.status());
         fsm.markReady();
