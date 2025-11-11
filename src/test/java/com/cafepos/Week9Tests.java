@@ -32,7 +32,7 @@ public class Week9Tests {
         root.add(drinks);
         root.add(desserts);
 
-      
+
         List<String> seen = new ArrayList<>();
         seen.add(root.name());
         Iterator<MenuComponent> it = root.iterator();
