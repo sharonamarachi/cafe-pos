@@ -1,0 +1,12 @@
+Composite — safety vs transparency
+
+MenuComponent gives one shared interface for everything (transparent), but methods that don’t make sense on a leaf throw UnsupportedOperationException (safe).
+MenuItem can’t have children, Menu can.
+This keeps the design clean and stops wrong usage without complicating the client code.
+
+Why State over if/else
+
+With State, each state has its own rules.
+The OrderFSM just hands actions to the current state.
+Valid actions move to the next state, invalid ones simply don’t change anything.
+This avoids long chains of if/else, makes behaviour easy to see, and new states can be added without touching old code.
